@@ -1,0 +1,41 @@
+{% extends "__l_main.html" %}
+ 
+{% load static from staticfiles %}
+{% load humanize %}
+{% load image_urls %}
+ 
+{% block sub_page_head %}{% endblock %}
+
+{% block head_page_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'css/featured_pages.css' %}">
+{% endblock head_page_css %}
+
+{% block subcontent %}
+
+  <div class="row">
+    <div class="col-md-4">
+      {% block featured_description %}
+        <h3>Browse Featured Content</h3>
+        <p>Browse pages with culturally, politically, or socially significant content.</p>
+      {% endblock featured_description %}
+    </div>
+    <div class="col-md-8">
+      {% block featured_pages %}
+        <h3>Featured Content</h3>
+        <ul class="featured_content">
+          {% for page in pages %}
+            <li>
+              <a href="{% url 'openoni_page' page.lccn page.date page.edition page.sequence %}">
+                <img src="{% thumb_image_url page.page_obj %}"/>
+              </a>
+              <p class="featured_title">{{ page.name }}</p>
+              <p class="featured_date">{{ page.date }}</p>
+              <p class="featured_caption">{{ page.caption }}</p>
+            </li>
+          {% endfor %}
+        </ul>
+      {% endblock featured_pages %}
+    </div>
+  </div>
+{% endblock subcontent %}  
