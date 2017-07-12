@@ -3,7 +3,7 @@ import random
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 
-from onisite.plugins.featured_pages import config
+from onisite.plugins.featured_content import config
 from core import models
 
 def featured(request):
