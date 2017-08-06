@@ -63,6 +63,7 @@ def _pages_this_day():
     issues = issues.filter(date_issued__month = now.month)
     issues = issues.filter(date_issued__day = now.day)
     for issue in issues[:100]:
+        first_page = issue.first_page
         if first_page and first_page.jp2_filename:
             pages.append({
                 'date': issue.date_issued,
