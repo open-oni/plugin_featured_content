@@ -1,45 +1,90 @@
 import random
 import datetime
 
-from django.shortcuts import render_to_response
+from django.shortcuts import render
 from django.template import RequestContext
 
 from onisite.plugins.featured_content import config
 from core import models
 
 def featured(request):
-    number = config.NUMBER
-    pages = None
-    if config.THISDAY:
-        pages = _this_day()
-        if not pages is None:
-            this_day_title = True
-    if pages is None and config.RANDOM:
-        page_len = len(models.Page.objects.all())
-        select_pages = random.sample(xrange(1, page_len), number)
-        pages = map(_get_page_info_by_id, select_pages)
-    elif pages is None:
-        # grab randomly from the curated selection
-        page_info = config.PAGES
-        page_len = len(page_info)
-        if page_len <= number:
-            pages = map(_get_page_by_info, page_info)
-        else:
-            rand_nums = random.sample(range(1, page_len), number)
-            random_pages = []
-            for num in rand_nums:
-                random_pages.append(page_info[num])
-            pages = map(_get_page_by_info, random_pages)
+    # Seed the RNG with today's date so we always feature the same page(s) for
+    # an entire day
+    random.seed(datetime.date.today().strftime("%Y%m%d"))
 
-    return render_to_response('featured.html',
-                           dictionary=locals(),
-                           context_instance=RequestContext(request))   
+    # Get and randomize pages
+    pages = []
+    all_pages, this_day_title = _get_pages()
+    if len(all_pages) > 0:
+        rand_nums = random.sample(xrange(len(all_pages)), config.NUMBER)
+        for num in rand_nums:
+            pages.append(all_pages[num])
 
+    # Clear the seed so anything else using random numbers isn't affected
+    random.seed(None)
+
+    return render(request, 'featured.html', locals())
 
 # helper methods
 
-def _get_page_info_by_id(page_id):
-    page_obj = models.Page.objects.get(id=page_id)
+def _get_pages():
+    """Delegate page-fetching based on the configuration; if THISDAY is
+    requested and gets valid pages, the second argument returned is True to
+    signal to the template which title to use"""
+
+    # We use random pages if explicitly requested *or* THISDAY is requested but
+    # no pages are found
+    isrand = config.RANDOM or config.THISDAY
+
+    if config.THISDAY:
+        pages = _pages_this_day()
+        if len(pages) > 0:
+            return pages, True
+
+    if isrand:
+        return _random_pages(config.NUMBER), False
+
+    return map(_get_page_by_info, config.PAGES), False
+
+def _pages_this_day():
+    """Find any pages within the min/max years and today's month/year"""
+    pages = []
+
+    # Filtering variables
+    dt_range_start = datetime.date(config.MINYEAR, 1, 1)
+    dt_range_end = datetime.date(config.MAXYEAR, 12, 31)
+    now = datetime.date.today()
+
+    # Grab each issue that matches, and create a page_info structure for the
+    # first page of that issue.  For sanity's sake, we only pull 100 max.
+    issues = models.Issue.objects
+    issues = issues.filter(date_issued__range=(dt_range_start, dt_range_end))
+    issues = issues.filter(date_issued__month = now.month)
+    issues = issues.filter(date_issued__day = now.day)
+    for issue in issues[:100]:
+        first_page = issue.first_page
+        if first_page and first_page.jp2_filename:
+            pages.append({
+                'date': issue.date_issued,
+                'edition': issue.edition,
+                'lccn': issue.title.lccn,
+                'name': issue.title.name,
+                'page_obj': first_page,
+                'sequence': first_page.sequence,
+            })
+
+    return pages
+
+def _random_pages(limit):
+    page_len = models.Page.objects.count()
+    indices = random.sample(xrange(page_len), limit)
+    pages = []
+    for index in indices:
+        pages.append(models.Page.objects.all()[index])
+
+    return map(_get_page_by_object, pages)
+
+def _get_page_by_object(page_obj):
     issue_obj = page_obj.issue
     page = {
         'date': issue_obj.date_issued,
@@ -62,39 +107,3 @@ def _get_page_by_info(page_info):
         page_info['name'] = 'Unknown Title'
         page_info['page_obj'] = None
     return page_info
-
-def _this_day():
-    pages = []
-    today = datetime.date.today()
-    rand_years = random.sample(xrange(config.MINYEAR,config.MAXYEAR), config.MAXYEAR-config.MINYEAR)
-    rand_years.insert(0, today.year-100)
-    for rand_year in rand_years:
-        page = _get_page_by_date(today.replace(year = rand_year))
-        if not page is None:
-            pages.append(page)
-            return pages
-    return None
-
-def _get_page_by_date(date):
-    issues = list(models.Issue.objects.filter(date_issued=date)[:10])
-    issue_count = len(issues)
-    if issue_count < 1:
-        return None
-    if issue_count < 2:
-        rand_indices = [0]
-    else:
-        rand_indices = random.sample(xrange(issue_count), issue_count)
-    for rand_index in rand_indices:
-        issue = issues[rand_index]
-        first_page = issue.first_page
-        if first_page and first_page.jp2_filename:
-            page = {
-                'date': issue.date_issued,
-                'edition': issue.edition,
-                'lccn': issue.title.lccn,
-                'name': issue.title.name,
-                'page_obj': first_page,
-                'sequence': first_page.sequence,
-            }
-            return page
-    return None
