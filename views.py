@@ -1,6 +1,5 @@
 import random
 import datetime
-import logging
 
 from django.shortcuts import render
 from django.template import RequestContext
@@ -83,7 +82,6 @@ def _random_pages(limit):
     for index in indices:
         pages.append(models.Page.objects.all()[index])
 
-    logging.warn(pages)
     return map(_get_page_by_object, pages)
 
 def _get_page_by_object(page_obj):
