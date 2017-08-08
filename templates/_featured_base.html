@@ -27,11 +27,11 @@
           {% for page in pages %}
             <li>
               <a href="{% url 'openoni_page' page.lccn page.date page.edition page.sequence %}">
-                <img src="{% thumb_image_url page.page_obj %}"/>
+                <img src="{% thumb_image_url page.page_obj %}" alt="" />
+                <p class="featured_title">{{ page.name }}</p>
+                <p class="featured_date">{{ page.date }}</p>
+                <p class="featured_caption">{{ page.caption }}</p>
               </a>
-              <p class="featured_title">{{ page.name }}</p>
-              <p class="featured_date">{{ page.date }}</p>
-              <p class="featured_caption">{{ page.caption }}</p>
             </li>
           {% endfor %}
         </ul>
