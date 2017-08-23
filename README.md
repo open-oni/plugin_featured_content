@@ -88,3 +88,28 @@ Unfortunately, at this time, you need to hand enter the pages that you would lik
 You may also want to change the text on the featured content page.  Open up `templates/featured.html` and add any HTML you need in `{% block featured_description %}`
 
 You will likely need to restart your app before you see the changes!
+
+## API use
+
+If you only want to get at the data without using the templates or routing provided, you can do something like this:
+
+```python
+# In your theme's views.py:
+from onisite.plugins.featured_content import helpers as featured_content_helpers
+
+def home(request):
+    """Grab featured content from the plugin, then set up some of the
+    high-level data like approximate page count"""
+    all_pages, this_day_title = featured_content_helpers.get_pages()
+    approx_pages = "about 900,000 pages"
+    earliest_year = 1900
+    latest_year = 1900
+
+    return render(request, 'home.html', locals())
+```
+
+This function lets you grab the pages and "this_day_title" variable, and then
+set up your own variables from other data sources, as well as render whatever
+template you want.  The plugin must still be configured, and must still be in
+your app list, but you wouldn't add it to your `urls.py`, and you can create a
+template however it makes sense with your particular homepage.
