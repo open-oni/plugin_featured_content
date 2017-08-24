@@ -100,7 +100,7 @@ from onisite.plugins.featured_content import helpers as featured_content_helpers
 def home(request):
     """Grab featured content from the plugin, then set up some of the
     high-level data like approximate page count"""
-    all_pages, this_day_title = featured_content_helpers.get_pages()
+    pages, this_day_title = featured_content_helpers.get_pages()
     approx_pages = "about 900,000 pages"
     earliest_year = 1900
     latest_year = 1900

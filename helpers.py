@@ -22,7 +22,7 @@ def get_pages():
     # Clear the seed so anything else using random numbers isn't affected
     random.seed(None)
 
-    return all_pages, this_day_title
+    return pages, this_day_title
 
 # "private" helper methods
 
