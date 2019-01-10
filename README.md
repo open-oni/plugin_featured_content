@@ -10,7 +10,7 @@ The setup for this plugin is slightly involved, but bear with us!
 git clone git@github.com:open-oni/plugin_featured_content.git onisite/plugins/featured_content
 ```
 
-Add it to your `INSTALLED_APPS` in `onisite/settings_local.py`:
+Add it to your `INSTALLED_APPS` in `onisite/settings_local.py`, above your theme (`default` or custom themes you've created):
 
 ```
 INSTALLED_APPS = (
@@ -53,10 +53,20 @@ Take a look at `config.py`.  There are two settings which are pretty self-explan
 # Set to True to use random pages instead of curated selections in PAGES
 RANDOM = True
 
+# Set to True to enable the 'This day in history' function, given that RANDOM is False
+THISDAY = True
+
+# Set to earliest year to search with THISDAY
+MINYEAR = 1900
+
+# Set to latest year to search  with THISDAY
+MAXYEAR = 1922
+
 # The number of results that will be displayed
 NUMBER = 4
 ```
-Setting RANDOM to False will mean that you can use the following setting in the config file:
+
+Setting RANDOM and THISDAY both to False will mean that you can use the following setting in the config file:
 
 ```
 PAGES = (
@@ -77,7 +87,7 @@ PAGES = (
 )
 ```
 
-Unfortunately, at this time, you need to hand enter the pages that you would like to appear as featured.  If you enter more pages than your max NUMBER, then only that many will be selected at random from your featured set.  You can get the information like lccn, date, edition, and sequence from the URL for an individual page.
+You must hand enter the pages that you would like to appear as featured.  If you enter more pages than your max NUMBER, then a subset will be selected randomly (each day) from your featured set.  You can get the information for lccn, date, edition, and sequence from the URL for an individual page.
 
 `http://newspapers.uni.edu/lccn/sn83045350/1878-01-03/ed-1/seq-1/`
 
