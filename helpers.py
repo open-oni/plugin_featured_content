@@ -85,12 +85,16 @@ def _pages_this_day():
 def _random_pages(limit):
     page_len = models.Page.objects.count()
     if page_len:
-        indices = ([i for i in xrange(page_len)]
-                    if page_len < limit
-                    else random.sample(xrange(page_len), limit))
+        indices = []
         pages = []
+        if page_len < limit:
+            indices = [i for i in xrange(page_len)]
+        else:
+            indices = random.sample(xrange(page_len), limit)
+
+        page_objects = models.Page.objects.all()
         for index in indices:
-            pages.append(models.Page.objects.all()[index])
+            pages.append(page_objects[index])
 
         return map(_get_page_by_object, pages)
     else:
