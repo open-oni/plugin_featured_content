@@ -47,28 +47,47 @@ cp templates/featured_example.html templates/featured.html
 
 ## Configuration
 
-Take a look at `config.py`.  There are two settings which are pretty self-explanatory:
+There are three possible options for the behavior of this plugin:
+
+- random selection from all pages (changes each day)
+- "on this day" selection, defaults to random if nothing occurred on that day
+- user selected pages of interest
+
+Please find below descriptions of how to configure the plugin for each of the above options.
+
+### Random Selection
+
+`config.py`
 
 ```
-# Set to True to use random pages instead of curated selections in PAGES
 RANDOM = True
+NUMBER = 4      # number of results that will be returned
+```
 
-# Set to True to enable the 'This day in history' function, given that RANDOM is False
+### On This Day
+
+You must first set RANDOM to False to use this feature
+
+`config.py`
+
+```
+RANDOM = False
 THISDAY = True
+MINYEAR = 1750   # earliest year to search for "on this day"
+MAXYEAR = 2000   # latest year to search for "on this day"
+NUMBER = 4       # number of results that will be returned
+```
 
-# Set to earliest year to search with THISDAY
-MINYEAR = 1900
+### User Selection
 
-# Set to latest year to search  with THISDAY
-MAXYEAR = 1922
+To get at the user selected featured pages, first set RANDOM and THISDAY to False, then add information for your specifically requested pages.
 
-# The number of results that will be displayed
+`config.py`
+
+```
+RANDOM = False
+THISDAY = False
 NUMBER = 4
-```
-
-Setting RANDOM and THISDAY both to False will mean that you can use the following setting in the config file:
-
-```
 PAGES = (
   {
       'lccn': 'sn83045350',
@@ -82,22 +101,23 @@ PAGES = (
       'date': '1878-01-03',
       'edition': 1,
       'sequence': 2,
-      'caption': 'This is the second one'
+      'caption': 'This is the second page of an issue'
   },
 )
 ```
 
-You must hand enter the pages that you would like to appear as featured.  If you enter more pages than your max NUMBER, then a subset will be selected randomly (each day) from your featured set.  You can get the information for lccn, date, edition, and sequence from the URL for an individual page.
+If you enter more `PAGES` than your max `NUMBER`, a subset will be selected randomly (each day) from your featured set.  You can get the information for lccn, date, edition, and sequence from the URL for an individual page.
 
 `http://newspapers.uni.edu/lccn/sn83045350/1878-01-03/ed-1/seq-1/`
 
-`edition` will typically always be 1, unless if the paper has morning and evening runs, etc
-`sequence` refers to the page number, so 1 is also a good choice if you want the front page of a particular day
+- `edition` will typically always be 1, unless if the paper has morning and evening runs, etc
+- `sequence` refers to the page number, so 1 is also a good choice if you want the front page of a particular day
 
 
-You may also want to change the text on the featured content page.  Open up `templates/featured.html` and add any HTML you need in `{% block featured_description %}`
+## Customizing the Template
 
-You will likely need to restart your app before you see the changes!
+You may want to change the text on the featured content page.  Open up `templates/featured.html` and add any HTML you need in `{% block featured_description %}`
+
 
 ## API use
 
