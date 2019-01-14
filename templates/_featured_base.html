@@ -22,18 +22,32 @@
     </div>
     <div class="col-md-8">
       {% block featured_pages %}
-        <h3>Featured Content</h3>
+        {% if this_day_title %}
+          <h3>On This Day</h3>
+        {% else %}
+          <h3>Featured Content</h3>
+        {% endif %}
         <ul class="featured_content">
-          {% for page in pages %}
-            <li>
-              <a href="{% url 'openoni_page' page.lccn page.date page.edition page.sequence %}">
-                <img src="{% thumb_image_url page.page_obj %}" alt="" />
-                <p class="featured_title">{{ page.name }}</p>
-                <p class="featured_date">{{ page.date }}</p>
-                <p class="featured_caption">{{ page.caption }}</p>
-              </a>
-            </li>
-          {% endfor %}
+          {% if pages %}
+            {% for page in pages %}
+              {% if page.page_obj %}
+                <li>
+                  <a href="{% url 'openoni_page' page.lccn page.date page.edition page.sequence %}">
+                    {% if page.page_obj.relative_image_path %}
+                      <img src="{% thumb_image_url page.page_obj %}" alt="" />
+                    {% endif %}
+                    <p class="featured_title">{{ page.name }}</p>
+                    <p class="featured_date">{{ page.date }}</p>
+                    <p class="featured_caption">{{ page.caption }}</p>
+                  </a>
+                </li>
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            {% block featured_no_content %}
+              <p>No content available</p>
+            {% endblock featured_no_content %}
+          {% endif %}
         </ul>
       {% endblock featured_pages %}
     </div>
