@@ -41,14 +41,14 @@ def _get_pages():
     return _featured_pages(config.PAGES, config.NUMBER), False
 
 def _featured_pages(pages, limit):
-    feat_pages = map(_get_page_by_info, pages)
+    feat_pages = list(map(_get_page_by_info, pages))
     # remove requested pages which were not found in the database
-    feat_pages = filter(None, feat_pages)
+    feat_pages = [_f for _f in feat_pages if _f]
     if len(feat_pages) <= limit:
         return feat_pages
     else:
         pages = []
-        rand_nums = random.sample(xrange(len(feat_pages)), limit)
+        rand_nums = random.sample(range(len(feat_pages)), limit)
         for num in rand_nums:
             pages.append(all_pages[num])
         return pages
@@ -88,15 +88,15 @@ def _random_pages(limit):
         indices = []
         pages = []
         if page_len < limit:
-            indices = [i for i in xrange(page_len)]
+            indices = [i for i in range(page_len)]
         else:
-            indices = random.sample(xrange(page_len), limit)
+            indices = random.sample(range(page_len), limit)
 
         page_objects = models.Page.objects.all()
         for index in indices:
             pages.append(page_objects[index])
 
-        return map(_get_page_by_object, pages)
+        return list(map(_get_page_by_object, pages))
     else:
         return []
 
