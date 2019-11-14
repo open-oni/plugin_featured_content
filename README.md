@@ -2,6 +2,19 @@
 
 This plugin allows you to quickly display page images in a "featured content" section.  You can display random pages from all of your titles, or you can configure the plugin to use specifically chosen pages.
 
+## Compatibility
+
+The "master" branch should not be considered stable.  Unlike the core Open ONI
+repository, plugins don't warrant the extra overhead of having separate
+development branches, release branches, etc.  Instead, it is best to find a tag
+that works and stick with that tag.
+
+- Featured Pages v0.4.0 and prior only work with Python 2 and Django 1.11 and prior
+  - Therefore these versions of the Featured Pages plugin are only compatible up to
+    (and including) ONI v0.11.0
+- Featured Pages releases beyond v0.4.0 will require Python 3 and Django 2.2 If
+  you need this plugin to work with ONI v0.11.0 or prior, stick with v0.4.0.
+
 ## Setup
 
 The setup for this plugin is slightly involved, but bear with us!
