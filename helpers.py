@@ -55,7 +55,7 @@ def _featured_pages(pages, limit):
 
 def _pages_this_day():
     """Find any pages within the min/max years and today's month/year"""
-    pages = []
+    this_day_pages = []
 
     # Filtering variables
     dt_range_start = datetime.date(config.MINYEAR, 1, 1)
@@ -64,23 +64,23 @@ def _pages_this_day():
 
     # Grab each issue that matches, and create a page_info structure for the
     # first page of that issue.  Grabbing only the set number requested by user
-    issues = models.Issue.objects
-    issues = issues.filter(date_issued__range=(dt_range_start, dt_range_end))
-    issues = issues.filter(date_issued__month = now.month)
-    issues = issues.filter(date_issued__day = now.day)
-    for issue in issues[:config.NUMBER]:
-        first_page = issue.first_page
-        if first_page and first_page.jp2_filename:
-            pages.append({
-                'date': issue.date_issued,
-                'edition': issue.edition,
-                'lccn': issue.title.lccn,
-                'name': issue.title.name,
-                'page_obj': first_page,
-                'sequence': first_page.sequence,
-            })
+    pages = models.Page.objects
+    pages = pages.filter(issue__date_issued__range = (dt_range_start, dt_range_end))
+    pages = pages.filter(issue__date_issued__month = now.month)
+    pages = pages.filter(issue__date_issued__day = now.day)
+    pages = pages.filter(jp2_filename__isnull = False)
+    pages = pages.filter(sequence = 1)
+    for page in pages[:config.NUMBER]:
+        this_day_pages.append({
+            'date': page.issue.date_issued,
+            'edition': page.issue.edition,
+            'lccn': page.issue.title.lccn,
+            'name': page.issue.title.name,
+            'page_obj': page,
+            'sequence': page.sequence,
+        })
 
-    return pages
+    return this_day_pages
 
 def _random_pages(limit):
     page_len = models.Page.objects.count()
