@@ -62,8 +62,7 @@ def _pages_this_day():
     dt_range_end = datetime.date(config.MAXYEAR, 12, 31)
     now = datetime.date.today()
 
-    # Grab each issue that matches, and create a page_info structure for the
-    # first page of that issue.  Grabbing only the set number requested by user
+    # Pull pages up to the number in config
     pages = models.Page.objects
     pages = pages.filter(issue__date_issued__range = (dt_range_start, dt_range_end))
     pages = pages.filter(issue__date_issued__month = now.month)
