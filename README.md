@@ -39,11 +39,16 @@ INSTALLED_APPS = (
 
 Put in a new URL path into `onisite/urls.py` above the `core.urls` line.  You can put this plugin at whatever URL you prefer, but two examples are given below.
 
-```
-  # this path will overwrite / (home)
-  re_path(r'^$', include("onisite.plugins.featured_content.urls")),
+```python
+  # This path will overwrite / (the root URL of the site)
+  # The view is imported because including a URLconf module at the root URL
+  # generates a Django warning
+  from onisite.plugins.featured_content import views as fc_views
+  ...
+  re_path(r'^$', fc_views.featured, name="featured_home"),
 
-  # this path will put the plugin at /featured_content
+
+  # This path will put the plugin at /featured_content
   re_path(r'^featured_content/', include("onisite.plugins.featured_content.urls")),
 
 
