@@ -41,14 +41,14 @@ Put in a new URL path into `onisite/urls.py` above the `core.urls` line.  You ca
 
 ```
   # this path will overwrite / (home)
-  url(r'^$', include("onisite.plugins.featured_content.urls")),
+  re_path(r'^$', include("onisite.plugins.featured_content.urls")),
 
   # this path will put the plugin at /featured_content
-  url(r'^featured_content/', include("onisite.plugins.featured_content.urls")),
+  re_path(r'^featured_content/', include("onisite.plugins.featured_content.urls")),
 
 
   # make sure you include your featured_content link above the core urls
-  url('', include("core.urls")),
+  path('', include("core.urls")),
 ```
 
 Now copy a few configuration / template files

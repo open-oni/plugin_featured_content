@@ -1,6 +1,6 @@
-from django.conf.urls import url, include
+from django.urls import include, path, re_path
 from onisite.plugins.featured_content import views
 
 urlpatterns = [
-  url('', views.featured, name="featured_home")
+  path('', views.featured, name="featured_home")
 ]
