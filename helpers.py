@@ -69,7 +69,9 @@ def _pages_this_day():
     pages = pages.filter(issue__date_issued__day = now.day)
     pages = pages.filter(jp2_filename__isnull = False)
     pages = pages.filter(sequence = 1)
-    for page in pages[:config.NUMBER]:
+    rand_nums = random.sample(range(len(pages)), config.NUMBER)
+    for rand_num in rand_nums:
+        page = pages[rand_num]
         this_day_pages.append({
             'date': page.issue.date_issued,
             'edition': page.issue.edition,
