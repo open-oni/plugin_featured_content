@@ -69,6 +69,8 @@ def _pages_this_day():
     pages = pages.filter(issue__date_issued__day = now.day)
     pages = pages.filter(jp2_filename__isnull = False)
     pages = pages.filter(sequence = 1)
+    if len(pages) == 0:
+        return this_day_pages
     rand_nums = random.sample(range(len(pages)), config.NUMBER)
     for rand_num in rand_nums:
         page = pages[rand_num]
